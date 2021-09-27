@@ -18,6 +18,7 @@
     "dev": "yarn workspace @ethereum-starter/frontend dev",
     "deploy": "yarn workspace @ethereum-starter/hardhat deploy",
     "chain": "yarn workspace @ethereum-starter/hardhat chain",
+    "compile": "yarn workspace @ethereum-starter/hardhat compile",
     "lint": "yarn workspaces run lint"
   },
   "devDependencies": {

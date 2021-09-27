@@ -5,7 +5,8 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx --fix"
+    "lint": "eslint . --ext .ts,.tsx --fix",
+    "client:types": "cp -r '../hardhat/artifacts' artifacts"
   },
   "dependencies": {
     "@usedapp/core": "^0.4.8",
