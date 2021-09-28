@@ -1,17 +1,19 @@
 import "@nomiclabs/hardhat-ethers";
 import "@typechain/hardhat";
-import "hardhat-deploy";
-import "hardhat-deploy-ethers";
 import "solidity-coverage";
 import "@nomiclabs/hardhat-waffle";
+import "dotenv/config";
 
 import { HardhatUserConfig } from "hardhat/types";
 
 const config: HardhatUserConfig = {
   defaultNetwork: "localhost",
   solidity: "0.8.3",
-  namedAccounts: {
-    deployer: 0,
+  networks: {
+    ropsten: {
+      url: process.env.ROPSTEN_URL,
+      accounts: [process.env.PRIVATE_KEY || ""],
+    },
   },
   typechain: {
     outDir: "./types/typechain",

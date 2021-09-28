@@ -2,6 +2,7 @@
 pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "hardhat/console.sol";
 
 import "./USDC.sol";
 
@@ -44,5 +45,6 @@ contract Staker is Ownable {
     );
 
     tokenAddress.transfer(msg.sender, amount);
+    depositedAmount[msg.sender] -= amount;
   }
 }
