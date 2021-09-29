@@ -6,12 +6,12 @@ import USDCArtifact from "../artifacts/contracts/USDC.sol/USDC.json";
 
 const usdcAddresses: ChainIDUrl = {
   [ChainId.Hardhat]: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
-  [ChainId.Ropsten]: "0xD8Ed07a7ad69f8E9D06A3b59847c0Fc9525F11E8",
+  [ChainId.Ropsten]: "0xb471D9f0bd7DB1BB4a20e9e696D29F5dB86a0e03",
 };
 
 const stakerAddresses: ChainIDUrl = {
   [ChainId.Hardhat]: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-  [ChainId.Ropsten]: "0x0CECa23490E9a9E60dC52d3A0D98FCA007C86113",
+  [ChainId.Ropsten]: "0xAf6c0f733c31B5da92F302D17A91c7b43c8cb308",
 };
 
 export const USDC = {

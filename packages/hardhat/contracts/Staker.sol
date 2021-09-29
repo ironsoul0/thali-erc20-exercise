@@ -39,10 +39,10 @@ contract Staker is Ownable {
       "Insufficient funds deposited"
     );
 
-    // require(
-    //   block.timestamp - lastDeposited[msg.sender] >= 2 hours,
-    //   "Allowed to withdraw only after 2 hours"
-    // );
+    require(
+      block.timestamp - lastDeposited[msg.sender] >= 2 hours,
+      "Allowed to withdraw only after 2 hours"
+    );
 
     tokenAddress.transfer(msg.sender, amount);
     depositedAmount[msg.sender] -= amount;
