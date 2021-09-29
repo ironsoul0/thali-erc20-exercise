@@ -204,7 +204,7 @@ const IndexPage = () => {
     <div className="max-w-lg py-4 mx-auto">
       {!account ? (
         <button
-          className="px-4 py-2 mt-2 text-white bg-blue-500 rounded-sm"
+          className="block px-4 py-2 m-auto mt-2 text-white bg-blue-500 rounded-sm"
           onClick={() => activateBrowserWallet()}
         >
           Please connect account
