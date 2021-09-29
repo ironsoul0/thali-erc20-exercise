@@ -1,6 +1,6 @@
 import { parseEther } from "@ethersproject/units";
 import { ChainId, useContractFunction, useEthers } from "@usedapp/core";
-import { readOnlyUrls, TARGET_CHAIN } from "config";
+import { isValidChain, readOnlyUrls, TARGET_CHAIN } from "config";
 import { Staker, USDC } from "config/contracts";
 import { BigNumber, Contract, providers, utils } from "ethers";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -189,6 +189,16 @@ const IndexPage = () => {
     const signer = chainReadProvider.getSigner();
     signer.sendTransaction({ value: parseEther("1"), to: account });
   };
+
+  if (chainId && !isValidChain(chainId)) {
+    return (
+      <div className="max-w-lg py-4 mx-auto">
+        <p className="text-red-400">
+          You are connected to the wrong network. Please connect to Ropsten.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-lg py-4 mx-auto">
