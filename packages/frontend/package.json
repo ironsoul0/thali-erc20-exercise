@@ -5,14 +5,13 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint": "yarn eslint",
+    "eslint": "eslint --ignore-path .gitignore . --fix",
     "client:types": "cp -r '../hardhat/artifacts' artifacts && cp -r '../hardhat/types' types"
   },
   "dependencies": {
     "@usedapp/core": "^0.4.8",
     "ethers": "^5.4.7",
-    "husky": "^7.0.2",
-    "lint-staged": "^11.1.2",
     "next": "^11.1.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
