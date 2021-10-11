@@ -5,7 +5,9 @@
   "scripts": {
     "chain": "npx hardhat node",
     "compile": "npx hardhat compile",
-    "lint": "eslint . --ext .ts,.tsx --fix",
+    "lint": "yarn eslint && yarn contracts",
+    "contracts": "prettier --write \"contracts/**/*.sol\"",
+    "eslint": "eslint --ignore-path .gitignore . --fix",
     "deploy": "npx hardhat run scripts/deploy.ts",
     "test": "npx hardhat test"
   },
