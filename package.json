@@ -21,7 +21,7 @@
     "compile": "yarn workspace @ethereum-starter/hardhat compile",
     "test": "yarn workspace @ethereum-starter/hardhat test",
     "lint": "yarn workspaces run lint",
-    "format": "npx eslint --fix",
+    "slither": "yarn workspace @ethereum-starter/hardhat slither",
     "prepare": "husky install"
   },
   "devDependencies": {
