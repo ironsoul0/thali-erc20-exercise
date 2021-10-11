@@ -28,7 +28,7 @@ const config: Config = {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <DAppProvider config={config}>
-          <Component {...pageProps} />
+      <Component {...pageProps} />
     </DAppProvider>
   );
 }
