@@ -21,20 +21,10 @@
     "compile": "yarn workspace @ethereum-starter/hardhat compile",
     "test": "yarn workspace @ethereum-starter/hardhat test",
     "lint": "yarn workspaces run lint",
+    "format": "npx eslint --fix",
     "prepare": "husky install"
   },
   "devDependencies": {
-    "husky": "^7.0.2",
-    "lint-staged": "^10.5.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "yarn lint"
-    ]
+    "husky": "^7.0.2"
   }
 }
