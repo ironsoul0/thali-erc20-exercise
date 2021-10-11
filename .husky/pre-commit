@@ -3,4 +3,5 @@
 
 yarn lint
 yarn test
+yarn coverage
 git add .
