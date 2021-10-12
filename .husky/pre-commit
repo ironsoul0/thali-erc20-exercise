@@ -4,4 +4,13 @@
 yarn lint
 yarn test
 yarn coverage
+p=`jq .total.lines.pct $(dirname "$0")/../packages/hardhat/coverage/coverage-summary.json`
+echo $p
+if(($p>=95))
+then
+        echo "Good coverage"
+else
+        echo "Less coverage"
+        exit 1
+fi
 git add .
