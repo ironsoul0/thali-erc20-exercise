@@ -2,5 +2,15 @@
 . "$(dirname "$0")/_/husky.sh"
 
 yarn lint
-yarn test
+yarn coverage
+lines=`jq .total.lines.pct $(dirname "$0")/../packages/hardhat/coverage/coverage-summary.json`
+statements=`jq .total.statements.pct $(dirname "$0")/../packages/hardhat/coverage/coverage-summary.json`
+functions=`jq .total.functions.pct $(dirname "$0")/../packages/hardhat/coverage/coverage-summary.json`
+if(($lines>=95 & $statements>=95 & $functions>=95))
+then
+        echo "Coverage meets expectations"
+else
+        echo "Coverage does not meet expectations"
+        exit 1
+fi
 git add .

@@ -10,7 +10,8 @@
     "eslint": "eslint --ignore-path .gitignore . --fix",
     "slither": "slither .",
     "deploy": "npx hardhat run scripts/deploy.ts",
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "coverage":  "npx hardhat coverage --testfiles \"test/token.ts\" --network hardhat"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

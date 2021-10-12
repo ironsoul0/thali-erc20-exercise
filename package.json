@@ -22,7 +22,8 @@
     "test": "yarn workspace @ethereum-starter/hardhat test",
     "lint": "yarn workspaces run lint",
     "slither": "yarn workspace @ethereum-starter/hardhat slither",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "coverage": "yarn workspace @ethereum-starter/hardhat coverage"
   },
   "devDependencies": {
     "husky": "^7.0.2"

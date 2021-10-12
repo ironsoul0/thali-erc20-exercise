@@ -5,3 +5,5 @@ node_modules/
 logs
 *.log
 yarn-error.log*
+
+.DS_Store
