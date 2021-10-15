@@ -1,5 +1,10 @@
 import { parseEther } from "@ethersproject/units";
-import { ChainId, useContractFunction, useEthers } from "@usedapp/core";
+import {
+  ChainId,
+  useContractCall,
+  useContractFunction,
+  useEthers,
+} from "@usedapp/core";
 import { isValidChain, readOnlyUrls, TARGET_CHAIN } from "config";
 import { Staker, USDC } from "config/contracts";
 import { BigNumber, Contract, providers, utils } from "ethers";
@@ -182,6 +187,14 @@ const IndexPage = () => {
     fetchAllowance
   );
   const [userDeposit, setUserDeposit] = useState<number | undefined>();
+  // const [tokenBalance] = useContractCall(
+  //   account && {
+  //     abi: USDC.interface,
+  //     address: USDC.address,
+  //     method: "balanceOf",
+  //     args: [account],
+  //   }
+  // );
 
   const sendEth = () => {
     if (!account) return;

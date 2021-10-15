@@ -10,18 +10,20 @@ const TOTAL_SUPPLY = 1337;
 describe("USDC interaction", () => {
   let usdc: USDC;
   let deployer: string;
-  let adminRole: any;
-  let minterRole: any;
-  let pauserRole: any;
+  let adminRole: string;
+  let minterRole: string;
+  let pauserRole: string;
 
   before(async () => {
     const USDCFactory = await ethers.getContractFactory("USDC");
+    const accounts = await ethers.getSigners();
+
+    deployer = accounts[0].address;
     usdc = (await USDCFactory.deploy(
-      utils.parseEther(TOTAL_SUPPLY.toString())
+      utils.parseEther(TOTAL_SUPPLY.toString()),
+      deployer
     )) as USDC;
 
-    const accounts = await ethers.getSigners();
-    deployer = accounts[0].address;
     adminRole = await usdc.DEFAULT_ADMIN_ROLE();
     minterRole = await usdc.MINTER_ROLE();
     pauserRole = await usdc.PAUSER_ROLE();
@@ -69,12 +71,13 @@ describe("USDC interaction", () => {
 
   describe("Staking logic", async () => {
     let staker: Staker;
-    let minterRole: any;
+    let minterRole: string;
 
     before(async () => {
       const USDCFactory = await ethers.getContractFactory("USDC");
       usdc = (await USDCFactory.deploy(
-        utils.parseEther(TOTAL_SUPPLY.toString())
+        utils.parseEther(TOTAL_SUPPLY.toString()),
+        deployer
       )) as USDC;
 
       const StakerFactory = await ethers.getContractFactory("Staker");

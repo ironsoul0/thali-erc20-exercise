@@ -11,8 +11,10 @@ contract USDC is Pausable, ERC20, AccessControl {
   // Create a new role identifier for pauser role
   bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
-  constructor(uint256 initialSupply) ERC20("USD Stablecoin", "USDC") {
-    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+  constructor(uint256 initialSupply, address admin)
+    ERC20("USD Stablecoin", "USDC")
+  {
+    _setupRole(DEFAULT_ADMIN_ROLE, admin);
     _mint(msg.sender, initialSupply);
   }
 

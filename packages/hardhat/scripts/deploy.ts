@@ -3,6 +3,7 @@ import hre, { ethers } from "hardhat";
 const TOTAL_SUPPLY = 1337;
 
 async function main() {
+  const { ADMIN_ADDRESS } = process.env;
   const { network } = hre;
 
   if (network.name === "localhost") {
@@ -12,7 +13,8 @@ async function main() {
 
   const USDCFactory = await ethers.getContractFactory("USDC");
   const usdcContract = await USDCFactory.deploy(
-    ethers.utils.parseEther(TOTAL_SUPPLY.toString())
+    ethers.utils.parseEther(TOTAL_SUPPLY.toString()),
+    ADMIN_ADDRESS as string
   );
   console.log("Deployed USDC to", usdcContract.address);
 

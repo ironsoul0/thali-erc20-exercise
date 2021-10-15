@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "yarn eslint",
     "eslint": "eslint --ignore-path .gitignore . --fix",
-    "client:types": "cp -r '../hardhat/artifacts' artifacts && cp -r '../hardhat/types' types"
+    "client:types": "rm -rf types && rm -rf artifacts && cp -r '../hardhat/artifacts' artifacts && cp -r '../hardhat/types' types"
   },
   "dependencies": {
     "@usedapp/core": "^0.4.8",
