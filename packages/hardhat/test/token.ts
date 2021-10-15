@@ -29,8 +29,8 @@ describe("USDC interaction", () => {
     expect(totalSupply).to.be.equal(utils.parseEther(TOTAL_SUPPLY.toString()));
   });
 
-  it("Owner of contract is deployer", async () => {
-    const owner = await usdc.owner();
+  it("Default admin of contract is deployer", async () => {
+    const owner = await usdc.hasRole(DEFAULT_ADMIN_ROLE, deployer);
     expect(owner).to.be.equal(deployer);
   });
 
