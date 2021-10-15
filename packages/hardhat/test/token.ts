@@ -10,6 +10,9 @@ const TOTAL_SUPPLY = 1337;
 describe("USDC interaction", () => {
   let usdc: USDC;
   let deployer: string;
+  let adminRole: any;
+  let minterRole: any;
+  let pauserRole: any;
 
   before(async () => {
     const USDCFactory = await ethers.getContractFactory("USDC");
@@ -19,6 +22,9 @@ describe("USDC interaction", () => {
 
     const accounts = await ethers.getSigners();
     deployer = accounts[0].address;
+    adminRole = await usdc.DEFAULT_ADMIN_ROLE();
+    minterRole = await usdc.MINTER_ROLE();
+    pauserRole = await usdc.PAUSER_ROLE();
   });
 
   it("Deployment should mint supply to the owner", async () => {
@@ -30,23 +36,40 @@ describe("USDC interaction", () => {
   });
 
   it("Default admin of contract is deployer", async () => {
-    const adminRole = await usdc.DEFAULT_ADMIN_ROLE();
     const owner = await usdc.hasRole(adminRole, deployer);
     expect(owner).to.be.true;
   });
 
-  it("Account cam freely mint new tokens", async () => {
+  it("Account with minter role can freely mint new tokens", async () => {
     const randomSigner = (await ethers.getSigners())[1];
     const tokensToMint = "100";
 
+    await usdc.grantRole(minterRole, randomSigner.address);
     await usdc.connect(randomSigner).freeMint(utils.parseEther(tokensToMint));
     const accountBalance = await usdc.balanceOf(randomSigner.address);
 
     expect(accountBalance).to.be.equal(utils.parseEther(tokensToMint));
   });
 
+  it("Account with pauser role can pause and unpause", async () => {
+    const minter = (await ethers.getSigners())[4];
+    const pauser = (await ethers.getSigners())[2];
+    const tokensToMint = "100";
+
+    await usdc.grantRole(minterRole, minter.address);
+    await usdc.grantRole(pauserRole, pauser.address);
+    await usdc.connect(pauser).pause();
+    await expect(usdc.connect(minter).freeMint(utils.parseEther(tokensToMint)))
+      .to.be.reverted;
+    await usdc.connect(pauser).unpause();
+    await usdc.connect(minter).freeMint(utils.parseEther(tokensToMint));
+    const accountBalance = await usdc.balanceOf(minter.address);
+    expect(accountBalance).to.be.equal(utils.parseEther(tokensToMint));
+  });
+
   describe("Staking logic", async () => {
     let staker: Staker;
+    let minterRole: any;
 
     before(async () => {
       const USDCFactory = await ethers.getContractFactory("USDC");
@@ -56,6 +79,8 @@ describe("USDC interaction", () => {
 
       const StakerFactory = await ethers.getContractFactory("Staker");
       staker = (await StakerFactory.deploy(usdc.address)) as Staker;
+
+      minterRole = await usdc.MINTER_ROLE();
     });
 
     it("Account with zero balance tries to deposit", async () => {
@@ -68,6 +93,7 @@ describe("USDC interaction", () => {
       const randomSigner = (await ethers.getSigners())[3];
       const tokenAmount = utils.parseEther("10");
 
+      await usdc.grantRole(minterRole, randomSigner.address);
       await usdc.connect(randomSigner).freeMint(tokenAmount);
       await usdc
         .connect(randomSigner)
@@ -87,6 +113,7 @@ describe("USDC interaction", () => {
       const randomSigner = (await ethers.getSigners())[4];
       const tokenAmount = utils.parseEther("10");
 
+      await usdc.grantRole(minterRole, randomSigner.address);
       await usdc.connect(randomSigner).freeMint(tokenAmount);
       await usdc
         .connect(randomSigner)
