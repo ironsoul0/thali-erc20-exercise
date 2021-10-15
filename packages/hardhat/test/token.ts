@@ -30,8 +30,9 @@ describe("USDC interaction", () => {
   });
 
   it("Default admin of contract is deployer", async () => {
-    const owner = await usdc.hasRole(DEFAULT_ADMIN_ROLE, deployer);
-    expect(owner).to.be.equal(deployer);
+    const adminRole = await usdc.DEFAULT_ADMIN_ROLE();
+    const owner = await usdc.hasRole(adminRole, deployer);
+    expect(owner).to.be.true;
   });
 
   it("Account cam freely mint new tokens", async () => {
