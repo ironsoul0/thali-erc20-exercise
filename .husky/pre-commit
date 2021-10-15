@@ -1,6 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+
 yarn lint
 yarn coverage
 lines=`jq .total.lines.pct $(dirname "$0")/../packages/hardhat/coverage/coverage-summary.json`
