@@ -29,6 +29,8 @@ export const useRoles = () => {
   );
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchRoles = async () => {
       const userRoles = await usdcContract.getRoles();
       const normalizedRoles = userRoles.reduce<string[]>((acc, role) => {
@@ -37,10 +39,14 @@ export const useRoles = () => {
         return acc;
       }, []);
 
-      setRoles(normalizedRoles);
+      if (!cancelled) setRoles(normalizedRoles);
     };
 
     fetchRoles();
+
+    return () => {
+      cancelled = true;
+    };
   }, [usdcContract]);
 
   const grantMinterRole = useCallback(
