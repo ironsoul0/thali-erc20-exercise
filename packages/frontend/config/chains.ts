@@ -1,4 +1,5 @@
 import { ChainId } from "@usedapp/core";
+import { providers } from "ethers";
 
 const INFURA_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 
@@ -25,3 +26,7 @@ export const TARGET_CHAIN = parseInt(
 export const isValidChain = (chainId: ChainId) => {
   return chainId == TARGET_CHAIN;
 };
+
+export const chainReadProvider = new providers.StaticJsonRpcProvider(
+  readOnlyUrls[TARGET_CHAIN]
+);

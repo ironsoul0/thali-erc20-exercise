@@ -49,4 +49,32 @@ contract USDC is Pausable, ERC20, AccessControl {
   ) internal override whenNotPaused {
     super._beforeTokenTransfer(from, to, amount);
   }
+
+  /**
+   * @dev Function which returns all roles that user has
+   */
+  function getRoles() public view returns (bytes32[] memory) {
+    uint256 totalRoles = 0;
+    bytes32[3] memory availableRoles = [
+      DEFAULT_ADMIN_ROLE,
+      MINTER_ROLE,
+      PAUSER_ROLE
+    ];
+
+    for (uint256 i = 0; i < availableRoles.length; i++) {
+      if (hasRole(availableRoles[i], msg.sender)) {
+        totalRoles++;
+      }
+    }
+
+    bytes32[] memory userRoles = new bytes32[](totalRoles);
+    uint256 roleCounter = 0;
+    for (uint256 i = 0; i < availableRoles.length; i++) {
+      if (hasRole(availableRoles[i], msg.sender)) {
+        userRoles[roleCounter++] = availableRoles[i];
+      }
+    }
+
+    return userRoles;
+  }
 }

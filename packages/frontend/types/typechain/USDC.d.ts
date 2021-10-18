@@ -31,6 +31,7 @@ interface USDCInterface extends ethers.utils.Interface {
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "freeMint(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
+    "getRoles()": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
@@ -81,6 +82,7 @@ interface USDCInterface extends ethers.utils.Interface {
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "getRoles", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "grantRole",
     values: [BytesLike, string]
@@ -148,6 +150,7 @@ interface USDCInterface extends ethers.utils.Interface {
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "getRoles", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
@@ -308,6 +311,8 @@ export class USDC extends BaseContract {
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
+    getRoles(overrides?: CallOverrides): Promise<[string[]]>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -408,6 +413,8 @@ export class USDC extends BaseContract {
 
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
+  getRoles(overrides?: CallOverrides): Promise<string[]>;
+
   grantRole(
     role: BytesLike,
     account: string,
@@ -504,6 +511,8 @@ export class USDC extends BaseContract {
     freeMint(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    getRoles(overrides?: CallOverrides): Promise<string[]>;
 
     grantRole(
       role: BytesLike,
@@ -709,6 +718,8 @@ export class USDC extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getRoles(overrides?: CallOverrides): Promise<BigNumber>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -817,6 +828,8 @@ export class USDC extends BaseContract {
       role: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getRoles(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     grantRole(
       role: BytesLike,

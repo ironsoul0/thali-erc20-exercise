@@ -153,4 +153,45 @@ describe("USDC interaction", () => {
       );
     });
   });
+
+  describe("Roles logic", async () => {
+    let usdc: USDC;
+
+    before(async () => {
+      const USDCFactory = await ethers.getContractFactory("USDC");
+      usdc = (await USDCFactory.deploy(
+        utils.parseEther(TOTAL_SUPPLY.toString()),
+        deployer
+      )) as USDC;
+
+      minterRole = await usdc.MINTER_ROLE();
+    });
+
+    it("Deployer has an admin role", async () => {
+      const roles = await usdc.getRoles();
+      expect(roles.length).to.be.equal(1);
+      expect(roles[0]).to.be.equal(ethers.constants.HashZero);
+    });
+
+    it("Account does not have any roles by default", async () => {
+      const randomSigner = (await ethers.getSigners())[1];
+      const roles = await usdc.connect(randomSigner).getRoles();
+      expect(roles).to.be.empty;
+    });
+
+    it("Account is issued new roles", async () => {
+      const randomSigner = (await ethers.getSigners())[1];
+      await usdc.grantRole(minterRole, randomSigner.address);
+      let roles: string[];
+
+      roles = await usdc.connect(randomSigner).getRoles();
+      expect(roles.length).to.equal(1);
+      expect(roles[0]).to.be.equal(minterRole);
+
+      await usdc.grantRole(pauserRole, randomSigner.address);
+      roles = await usdc.connect(randomSigner).getRoles();
+      expect(roles.length).to.equal(2);
+      expect(roles).to.include.members([minterRole, pauserRole]);
+    });
+  });
 });

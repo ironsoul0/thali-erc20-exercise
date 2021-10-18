@@ -1,176 +1,11 @@
 import { parseEther } from "@ethersproject/units";
-import {
-  ChainId,
-  useContractCall,
-  useContractFunction,
-  useEthers,
-} from "@usedapp/core";
-import { isValidChain, readOnlyUrls, TARGET_CHAIN } from "config";
-import { Staker, USDC } from "config/contracts";
-import { BigNumber, Contract, providers, utils } from "ethers";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-
-import {
-  Staker as StakerContract,
-  USDC as USDCContract,
-} from "../types/typechain";
-
-export const chainReadProvider = new providers.StaticJsonRpcProvider(
-  readOnlyUrls[TARGET_CHAIN]
-);
-
-const useTokenContract = () => {
-  const { library } = useEthers();
-
-  return useMemo(() => {
-    return new Contract(
-      USDC.address,
-      USDC.abi,
-      library ? library.getSigner() : chainReadProvider
-    ) as USDCContract;
-  }, [library]);
-};
-
-const useStakerContract = () => {
-  const { library } = useEthers();
-
-  return useMemo(() => {
-    return new Contract(
-      Staker.address,
-      Staker.abi,
-      library ? library.getSigner() : chainReadProvider
-    ) as StakerContract;
-  }, [library]);
-};
-
-const useTokenInfo = (spenderAddress?: string) => {
-  const [balance, setBalance] = useState(BigNumber.from(0));
-  const [allowance, setAllowance] = useState({
-    loading: false,
-    value: BigNumber.from(0),
-  });
-  const tokenContract = useTokenContract();
-  const { account } = useEthers();
-
-  const { state: mintState, send: sendMint } = useContractFunction(
-    tokenContract as any,
-    "freeMint"
-  );
-  const { state: increaseAllowanceState, send: increaseAllowance } =
-    useContractFunction(tokenContract as any, "increaseAllowance");
-
-  const fetchBalance = useCallback(async () => {
-    if (!account) return;
-    const userBalance = await tokenContract.balanceOf(account);
-    setBalance(userBalance);
-  }, [account, tokenContract]);
-
-  const fetchAllowance = useCallback(async () => {
-    if (!account || !spenderAddress) return;
-
-    setAllowance((allowance) => ({
-      ...allowance,
-      loading: true,
-    }));
-    const userAllowance = await tokenContract.allowance(
-      account,
-      spenderAddress
-    );
-    setAllowance({
-      value: userAllowance,
-      loading: false,
-    });
-  }, [account, spenderAddress, tokenContract]);
-
-  const freeMint = useCallback(async () => {
-    sendMint(utils.parseEther("1337"));
-  }, [sendMint]);
-
-  useEffect(() => {
-    fetchBalance();
-  }, [fetchBalance]);
-
-  useEffect(() => {
-    if (mintState.status === "Success") {
-      fetchBalance();
-    }
-  }, [mintState, fetchBalance]);
-
-  useEffect(() => {
-    fetchAllowance();
-  }, [fetchAllowance]);
-
-  useEffect(() => {
-    if (increaseAllowanceState.status === "Success") {
-      fetchAllowance();
-    }
-  }, [fetchAllowance, increaseAllowanceState]);
-
-  return {
-    balance,
-    allowance,
-    freeMint,
-    increaseAllowance,
-    fetchBalance,
-    fetchAllowance,
-  };
-};
-
-const useStakerInfo = <T extends () => Promise<void>>(
-  fetchBalance: T,
-  fetchAllowance: T
-) => {
-  const { account } = useEthers();
-  const stakerContract = useStakerContract();
-  const [depositedAmount, setDepositedAmount] = useState({
-    deposit: BigNumber.from(0),
-    treasury: BigNumber.from(0),
-  });
-  const { state: depositState, send: sendDeposit } = useContractFunction(
-    stakerContract as any,
-    "depositTokens"
-  );
-  const { state: withdrawState, send: sendWithdraw } = useContractFunction(
-    stakerContract as any,
-    "withdrawTokens"
-  );
-
-  const fetchDeposit = useCallback(async () => {
-    if (!account) return;
-    const userDeposited = await stakerContract.depositedAmount(account);
-    const treasuryAmount = await stakerContract.treasuryAmount();
-    setDepositedAmount({ deposit: userDeposited, treasury: treasuryAmount });
-  }, [account, stakerContract]);
-
-  const withdrawDeposit = useCallback(async () => {
-    sendWithdraw(depositedAmount.deposit);
-  }, [sendWithdraw, depositedAmount]);
-
-  useEffect(() => {
-    fetchDeposit();
-  }, [fetchDeposit]);
-
-  useEffect(() => {
-    if (depositState.status === "Success") {
-      fetchDeposit();
-      fetchBalance();
-      fetchAllowance();
-    }
-  }, [depositState, fetchDeposit, fetchAllowance, fetchBalance]);
-
-  useEffect(() => {
-    if (withdrawState.status === "Success") {
-      fetchDeposit();
-      fetchBalance();
-    }
-  }, [withdrawState, fetchBalance, fetchDeposit]);
-
-  return {
-    depositedAmount,
-    sendDeposit,
-    withdrawDeposit,
-  };
-};
+import { ChainId, useContractCall, useEthers } from "@usedapp/core";
+import { chainReadProvider, isValidChain } from "config";
+import { Staker, USDC } from "config";
+import { utils } from "ethers";
+import { useStakerInfo, useTokenInfo } from "hooks";
+import { useRoles } from "hooks";
+import React, { useState } from "react";
 
 const IndexPage = () => {
   const { activateBrowserWallet, account, chainId } = useEthers();
@@ -187,14 +22,14 @@ const IndexPage = () => {
     fetchAllowance
   );
   const [userDeposit, setUserDeposit] = useState<number | undefined>();
-  // const [tokenBalance] = useContractCall(
-  //   account && {
-  //     abi: USDC.interface,
-  //     address: USDC.address,
-  //     method: "balanceOf",
-  //     args: [account],
-  //   }
-  // );
+  const { userRoles, grantMinterRole, grantPauserRole } = useRoles();
+  const isPaused = useContractCall({
+    abi: USDC.interface,
+    address: USDC.address,
+    method: "paused",
+    args: [],
+  });
+  const [targetAccount, setTargetAccount] = useState<string | undefined>();
 
   const sendEth = () => {
     if (!account) return;
@@ -232,7 +67,15 @@ const IndexPage = () => {
           <p>
             <span className="font-bold text-blue-500">Chain ID:</span> {chainId}
           </p>
+          <p>
+            <span className="font-bold text-blue-500">Roles:</span>{" "}
+            {userRoles.length > 0 ? userRoles.join(", ") : "None"}
+          </p>
           <h3 className="mt-12 mb-3 text-xl font-bold">USDC contract</h3>
+          <p>
+            <span className="font-bold text-blue-500">Paused:</span>{" "}
+            {isPaused?.[0] ? "Yes" : "No"}
+          </p>
           <p>
             <span className="font-bold text-blue-500">My USDC balance:</span>{" "}
             {utils.formatEther(usdcBalance)}
@@ -300,6 +143,36 @@ const IndexPage = () => {
           >
             Withdraw everything
           </button>
+          {userRoles.includes("ADMIN") && (
+            <>
+              <h3 className="mt-12 mb-3 text-xl font-bold">Admin panel</h3>
+              <input
+                type="text"
+                className="block w-full px-4 py-2 mb-3 rounded-sm outline-none appearance-none ring-2"
+                placeholder="0x12.."
+                value={targetAccount}
+                onChange={(e) => setTargetAccount(e.target.value)}
+              />
+              <div className="flex gap-5">
+                <button
+                  className="block px-4 py-2 text-white bg-green-500 rounded-sm"
+                  onClick={() =>
+                    targetAccount && grantMinterRole(targetAccount)
+                  }
+                >
+                  Grant minter role
+                </button>
+                <button
+                  className="block px-4 py-2 text-white bg-green-500 rounded-sm"
+                  onClick={() =>
+                    targetAccount && grantPauserRole(targetAccount)
+                  }
+                >
+                  Grant pauser role
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
